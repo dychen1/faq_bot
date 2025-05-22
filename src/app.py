@@ -1,0 +1,32 @@
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
+from fastapi import FastAPI
+
+from src.settings import settings
+from src.utils.logger import get_queue_logger
+from src.utils.middleware.auth import AuthMiddleware
+from src.utils.middleware.log import LoggerMiddleware
+from src.utils.state import State
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """
+    Manages client connections during lifespan of app, inits logger and thread pool.
+    Opens them upon start up, ensuring single connection for the entire app and implicitly closes connections upon shutdown.
+    """
+    # Init
+    logger, listener = get_queue_logger()
+    app.state.state = State(logger)
+    yield
+
+    # Cleanup
+    app.state.state.thread_pool.shutdown(wait=True, cancel_futures=True)
+    listener.stop()
+
+
+app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(LoggerMiddleware)
+app.add_middleware(AuthMiddleware, api_key=settings.api_key)
