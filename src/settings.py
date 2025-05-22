@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -23,10 +21,10 @@ class Settings(BaseSettings):
         alias="APP_THREAD_POOL_SIZE", default=2
     )  # if None, use 2 - 1 for event loop 1 for logger
 
+    # Yelp Settings
+    yelp_base_url: str = Field(alias="YELP_BASE_URL")
+
     # Logger Settings
-    log_path: Path = Field(alias="LOG_PATH", default=Path.cwd().parent.parent / "etc" / "logs")
-    stream_stdout: bool = Field(alias="STREAM_STDOUT", default=True)
-    log_to_file: bool = Field(alias="LOG_TO_FILE", default=True)
     debug: bool = Field(alias="DEBUG")
 
     model_config = SettingsConfigDict(

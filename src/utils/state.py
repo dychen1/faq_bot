@@ -1,6 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from logging import Logger
 
+from fastapi import Request
 from httpx import AsyncClient, Limits
 
 from src.settings import settings
@@ -27,3 +28,8 @@ class State:
         )
         # Thread pool
         self.thread_pool = ThreadPoolExecutor(max_workers=self.settings.thread_pool_size)
+
+
+def get_state(req: Request) -> State:
+    """Wrapper function for application state in order to return the state object with correct typing."""
+    return req.app.state.state
