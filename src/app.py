@@ -17,7 +17,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     Opens them upon start up, ensuring single connection for the entire app and implicitly closes connections upon shutdown.
     """
     # Init
-    logger, listener = get_queue_logger()
+    logger, listener = get_queue_logger(settings.app_name)
     app.state.state = State(logger)
     yield
 

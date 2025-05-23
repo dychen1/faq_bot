@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     yelp_api_key: str = Field(alias="YELP_API_KEY")
 
     # App Settings
+    app_name: str = Field(alias="APP_NAME")
     app_port: int = Field(alias="APP_PORT")
     thread_pool_size: int | None = Field(
         alias="APP_THREAD_POOL_SIZE", default=2

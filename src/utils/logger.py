@@ -8,7 +8,7 @@ from src.settings import settings
 
 
 def get_queue_logger(
-    app_name: str = "app",
+    app_name: str,
     queue_size: int = 10000,
 ) -> tuple[logging.Logger, QueueListener]:
     """
@@ -53,10 +53,3 @@ def get_queue_logger(
     print(f"Active threads: {[t.name for t in threading.enumerate()]}")
 
     return logger, listener
-
-
-def get_app_logger(app_name: str = "app") -> logging.Logger:
-    """
-    Returns a logger for the application. Used to fetch single queue logger for the application.
-    """
-    return logging.getLogger(app_name)
