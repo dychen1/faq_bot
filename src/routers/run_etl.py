@@ -23,7 +23,7 @@ async def run_etl(request: RunETLRequest, state: State = Depends(get_state)) -> 
             successful.append(business.location_name)
         else:
             missing.append(business.location_name)
-    # Can supplement with google places data
+    # Can supplement with google places data for businesses that are missing from yelp
 
     return RunETLResponse(
         successful=successful,

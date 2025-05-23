@@ -31,6 +31,7 @@ class BusinessLocation(BaseModel):
     zip_code: str
     country: str
     state: str
+    active: bool = True
 
 
 class BusinessTags(BaseModel):
