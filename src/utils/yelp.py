@@ -43,9 +43,10 @@ class YelpBusinessSearchParams(BaseModel):
         return params  # No encoding here as we use httpx to run the query afterwards
 
 
-class YelpBusinessSearch(BaseModel):
-    client: AsyncClient
-    base_url: str = f"{settings.yelp_base_url}/businesses/search"
+class YelpBusinessSearch:
+    def __init__(self, client: AsyncClient):
+        self.client = client
+        self.base_url = f"{settings.yelp_base_url}/businesses/search"
 
     async def _get_data(self, params: YelpBusinessSearchParams) -> dict[str, Any]:
         logger.debug(f"Sending Yelp query with params: {params.params}")
