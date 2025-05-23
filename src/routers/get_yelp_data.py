@@ -13,12 +13,10 @@ router = APIRouter()
 
 @router.post("/get_yelp_data")
 async def get_yelp_data(request: GetYelpDataRequest, state: State = Depends(get_state)) -> GetYelpDataResponse:
-    return await _get_yelp_data_internal(request, state.yelp_client, state.logger)
+    return await _get_yelp_data(request, state.yelp_client, state.logger)
 
 
-async def _get_yelp_data_internal(
-    request: GetYelpDataRequest, yelp_client: AsyncClient, logger: Logger
-) -> GetYelpDataResponse:
+async def _get_yelp_data(request: GetYelpDataRequest, yelp_client: AsyncClient, logger: Logger) -> GetYelpDataResponse:
     search = YelpBusinessSearch(yelp_client)
     missing: list[str] = []
     data: list[YelpBusinessData] = []
@@ -38,8 +36,7 @@ async def _get_yelp_data_internal(
             missing.append(business.location_name)
             # Can supplement with google places data for businesses that are missing from yelp
 
-    logger.info(f"Missing data for {len(missing)} businesses out of {len(request.businesses)}")
-    logger.info(f"Missing data for {missing}")
+    logger.info(f"Missing data for {len(missing)} businesses out of {len(request.businesses)}: {missing}")
     return GetYelpDataResponse(
         data=data,
         missing=missing,

@@ -25,8 +25,7 @@ def get_queue_logger(
     level: str = ("debug" if settings.debug else "info").upper()
     logger.setLevel(level)
 
-    # The format string already includes correlation_id
-    log_format: str = "%(name)s - %(correlation_id)s - %(asctime)s - %(funcName)s - %(levelname)s - %(message)s"
+    log_format: str = "%(name)s - %(asctime)s - %(funcName)s - %(levelname)s - %(message)s"
     formatter: logging.Formatter = logging.Formatter(log_format)
 
     # Create handlers

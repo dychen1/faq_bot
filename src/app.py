@@ -3,6 +3,7 @@ from typing import AsyncGenerator
 
 from fastapi import FastAPI
 
+from src.routers.get_yelp_data import router as yelp_router
 from src.settings import settings
 from src.utils.logger import get_queue_logger
 from src.utils.middleware.auth import AuthMiddleware
@@ -30,3 +31,6 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(LoggerMiddleware)
 app.add_middleware(AuthMiddleware, api_key=settings.api_key)
+
+# Mount routers
+app.include_router(yelp_router)

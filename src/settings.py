@@ -30,6 +30,7 @@ class Settings(BaseSettings):
 
     # Logger Settings
     debug: bool = Field(alias="DEBUG")
+    sql_echo: bool = Field(alias="SQL_ECHO")
 
     model_config = SettingsConfigDict(
         env_file=(f"{ENV_PATH}/.env", f"{ENV_PATH}/.secret"),

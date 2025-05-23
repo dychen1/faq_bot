@@ -14,7 +14,7 @@ logger = logging.getLogger(settings.app_name)
 class YelpBusinessData(BaseModel):
     business_data: BusinessBase
     location_data: BusinessLocation
-    business_attributes: BusinessTags
+    business_tags: BusinessTags
 
 
 class YelpBusinessSearchParams(BaseModel):
@@ -89,7 +89,7 @@ class YelpBusinessSearch:
         good_for_meal = attributes.get("good_for_meal") or {}
         business_parking = attributes.get("business_parking") or {}
 
-        business_attributes = BusinessTags(
+        business_tags = BusinessTags(
             business_accepts_apple_pay=attributes.get("business_accepts_apple_pay") or False,
             business_temp_closed=attributes.get("business_temp_closed") or False,
             # Not sure what the possible enums are for alcohol attribute, so assuming anything other than "none" means the business serves alcohol
@@ -137,9 +137,7 @@ class YelpBusinessSearch:
             hot_and_new=attributes.get("hot_and_new") or False,
         )
 
-        return YelpBusinessData(
-            business_data=business_data, location_data=location_data, business_attributes=business_attributes
-        )
+        return YelpBusinessData(business_data=business_data, location_data=location_data, business_tags=business_tags)
 
     async def query(self, params: YelpBusinessSearchParams) -> YelpBusinessData | None:
         try:

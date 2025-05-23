@@ -5,6 +5,7 @@ from fastapi import Request
 from httpx import AsyncClient, Limits
 
 from src.settings import settings
+from src.utils.database import db
 
 
 class State:
@@ -26,6 +27,10 @@ class State:
         self.yelp_client.headers.update(
             {"Authorization": f"Bearer {settings.yelp_api_key}", "Content-Type": "application/json"}
         )
+
+        # Database
+        self.db = db  # singleton
+
         # Thread pool
         self.thread_pool = ThreadPoolExecutor(max_workers=self.settings.thread_pool_size)
 
