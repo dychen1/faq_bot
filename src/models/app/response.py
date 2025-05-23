@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 
+from src.utils.yelp import YelpBusinessData
 
-class RunETLResponse(BaseModel):
-    successful: list[str] = Field(default_factory=list)
+
+class GetYelpDataResponse(BaseModel):
+    data: list[YelpBusinessData]
     missing: list[str] = Field(default_factory=list)

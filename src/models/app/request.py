@@ -7,5 +7,5 @@ class BasicBusinessInfo(BaseModel):
     phone_number: str | None = None
 
 
-class RunETLRequest(BaseModel):
+class GetYelpDataRequest(BaseModel):
     businesses: list[BasicBusinessInfo]

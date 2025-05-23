@@ -1,0 +1,42 @@
+Table businesses {
+  id int [primary key]
+  name str
+  url str
+  price enum
+  source str
+  source_id str
+  source_url str
+  source_rating float
+  phone str
+  created_at timestamp
+}
+
+Table locations {
+  id int [primary key]
+  business_id int [ref: > businesses.id]
+  longitude float
+  latitude float
+  address str
+  city str
+  zip_code str
+  country str
+  state str
+  active bool 
+  created_at timestamp
+
+  Indexes {
+    (business_id)
+  }
+}
+
+Table tags {
+  id integer [primary key]
+  business_id int [ref: > businesses.id]
+  tag str
+  created_at timestamp
+
+  Indexes {
+    (business_id)
+    (tag)
+  }
+}

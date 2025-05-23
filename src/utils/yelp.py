@@ -5,13 +5,13 @@ from fastapi import HTTPException
 from httpx import AsyncClient
 from pydantic import BaseModel
 
-from src.models.base import BusinessBase, BusinessLocation, BusinessTags, PriceLevel
+from src.models.app.base import BusinessBase, BusinessLocation, BusinessTags, PriceLevel
 from src.settings import settings
 
 logger = logging.getLogger(settings.app_name)
 
 
-class YelpBusinessSearchResponse(BaseModel):
+class YelpBusinessData(BaseModel):
     business_data: BusinessBase
     location_data: BusinessLocation
     business_attributes: BusinessTags
@@ -57,7 +57,7 @@ class YelpBusinessSearch:
         response.raise_for_status()
         return response.json()
 
-    async def _parse_to_response_model(self, data: dict[str, Any]) -> YelpBusinessSearchResponse:
+    async def _parse_to_response_model(self, data: dict[str, Any]) -> YelpBusinessData:
         # Get the first business from the response as we defaulted query limit to 1
         business = data["businesses"][0]
 
@@ -138,11 +138,11 @@ class YelpBusinessSearch:
             hot_and_new=attributes.get("hot_and_new") or False,
         )
 
-        return YelpBusinessSearchResponse(
+        return YelpBusinessData(
             business_data=business_data, location_data=location_data, business_attributes=business_attributes
         )
 
-    async def query(self, params: YelpBusinessSearchParams) -> YelpBusinessSearchResponse | None:
+    async def query(self, params: YelpBusinessSearchParams) -> YelpBusinessData | None:
         try:
             yelp_data = await self._get_data(params)
             # Validate query response matches the business name
