@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from src.models.request import LoadDataRequest
-from src.models.response import GetDataResponse
+from src.models.request import RunETLRequest
+from src.models.response import RunETLResponse
 from src.utils.state import State, get_state
 from src.utils.yelp import YelpBusinessSearch, YelpBusinessSearchParams
 
@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.post("/run_etl")
-async def run_etl(request: LoadDataRequest, state: State = Depends(get_state)) -> GetDataResponse:
+async def run_etl(request: RunETLRequest, state: State = Depends(get_state)) -> RunETLResponse:
     successful: list[str] = []
     missing: list[str] = []
     search = YelpBusinessSearch(state.yelp_client)
@@ -25,7 +25,7 @@ async def run_etl(request: LoadDataRequest, state: State = Depends(get_state)) -
             missing.append(business.location_name)
     # Can supplement with google places data
 
-    return GetDataResponse(
-        successful=[],
-        missing=[],
+    return RunETLResponse(
+        successful=successful,
+        missing=missing,
     )
