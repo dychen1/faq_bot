@@ -1,26 +1,24 @@
-from enum import Enum
-
 from pydantic import BaseModel
 
 # Defined data models drives what data we want to pull from external API (e.g. Yelp, Google, etc.)
 
-
-class PriceLevel(Enum):
-    CHEAP = "$"
-    MODERATE = "$$"
-    EXPENSIVE = "$$$"
-    VERY_EXPENSIVE = "$$$$"
+# skipping enum option for now
+# class PriceLevel(Enum):
+#     CHEAP = "$"
+#     MODERATE = "$$"
+#     EXPENSIVE = "$$$"
+#     VERY_EXPENSIVE = "$$$$"
 
 
 class BusinessBase(BaseModel):
     name: str
     url: str
-    price: PriceLevel
     source: str
     source_id: str | None
     source_url: str | None
     source_rating: float | None
     phone: str | None
+    # price: PriceLevel | None
 
 
 class BusinessLocation(BaseModel):

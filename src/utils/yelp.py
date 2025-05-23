@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from httpx import AsyncClient
 from pydantic import BaseModel
 
-from src.models.app.base import BusinessBase, BusinessLocation, BusinessTags, PriceLevel
+from src.models.app.base import BusinessBase, BusinessLocation, BusinessTags
 from src.settings import settings
 
 logger = logging.getLogger(settings.app_name)
@@ -36,10 +36,6 @@ class YelpBusinessSearchParams(BaseModel):
             "limit": self.limit,
             "term": self.location_name,
         }
-
-        # Add optional parameters
-        if self.phone_number is not None:
-            params["phone"] = self.phone_number
         return params  # No encoding here as we use httpx to run the query afterwards
 
 
@@ -59,13 +55,16 @@ class YelpBusinessSearch:
 
     async def _parse_to_response_model(self, data: dict[str, Any]) -> YelpBusinessData:
         # Get the first business from the response as we defaulted query limit to 1
+        if not data.get("businesses") or len(data["businesses"]) == 0:
+            raise ValueError("No businesses found in Yelp response")
+
         business = data["businesses"][0]
 
         # Parse business base data
         business_data = BusinessBase(
             name=business["name"],
             url=business["url"],
-            price=PriceLevel(business["price"]),
+            # price=PriceLevel(business.get("price")) if business.get("price") else None,
             source="yelp",
             source_id=business["id"],
             source_url=business["url"],
@@ -77,7 +76,7 @@ class YelpBusinessSearch:
         location_data = BusinessLocation(
             longitude=business["coordinates"]["longitude"],
             latitude=business["coordinates"]["latitude"],
-            address=business["location"]["address1"],
+            address=" ".join(business["location"]["display_address"]),
             city=business["location"]["city"],
             zip_code=business["location"]["zip_code"],
             country=business["location"]["country"],
@@ -86,9 +85,9 @@ class YelpBusinessSearch:
 
         # Parse business attributes
         attributes = business["attributes"]
-        ambience = attributes.get("ambience", {})
-        good_for_meal = attributes.get("good_for_meal", {})
-        business_parking = attributes.get("business_parking", {})
+        ambience = attributes.get("ambience") or {}
+        good_for_meal = attributes.get("good_for_meal") or {}
+        business_parking = attributes.get("business_parking") or {}
 
         business_attributes = BusinessTags(
             business_accepts_apple_pay=attributes.get("business_accepts_apple_pay") or False,
@@ -145,9 +144,25 @@ class YelpBusinessSearch:
     async def query(self, params: YelpBusinessSearchParams) -> YelpBusinessData | None:
         try:
             yelp_data = await self._get_data(params)
+            # Check if we got any businesses in the response
+            if not yelp_data.get("businesses") or len(yelp_data["businesses"]) == 0:
+                return None
+
             # Validate query response matches the business name
             if yelp_data["businesses"][0]["name"] != params.location_name:
-                return None
+                logger.debug(
+                    f"Business name mismatch: expected {params.location_name}, got {yelp_data['businesses'][0]['name']}"
+                )
+
+                # If name mismatch, check if phone number matches
+                if params.phone_number:
+                    if yelp_data["businesses"][0]["display_phone"] != params.phone_number:
+                        logger.debug(
+                            f"Phone number mismatch: expected {params.phone_number}, got {yelp_data['businesses'][0]['display_phone']}"
+                        )
+                        return None
+
             return await self._parse_to_response_model(yelp_data)
         except Exception as e:
+            logger.error(f"Error querying Yelp for {params.location_name}: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error querying Yelp: {e}")

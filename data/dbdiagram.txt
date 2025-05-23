@@ -1,13 +1,12 @@
 Table businesses {
   id int [primary key]
   name str
-  url str
-  price enum
+  url str [null]
   source str
-  source_id str
-  source_url str
-  source_rating float
-  phone str
+  source_id str [null]
+  source_url str [null]
+  source_rating float [null]
+  phone str [null]
   created_at timestamp
 }
 

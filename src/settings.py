@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     # Yelp Settings
     yelp_base_url: str = Field(alias="YELP_BASE_URL")
 
+    # Database Settings
+    database_url: str = Field(alias="DATABASE_URL")
+
     # Logger Settings
     debug: bool = Field(alias="DEBUG")
 

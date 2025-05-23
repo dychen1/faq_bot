@@ -5,6 +5,7 @@ description = "FastAPI with endpoints to scrap and answer natural language quest
 authors = [{ name = "dychen", email = "dychen93@hotmail.com" }]
 readme = "README.md"
 requires-python = ">=3.12, <3.13"
+
 [dependency-groups]
 main = [
     "fastapi[standard] >=0.115.5",
@@ -12,8 +13,13 @@ main = [
     "pydantic-settings >=2.6.1",
     "httpx>=0.28.1",
     "pandas>=2.2.3",
+    "sqlalchemy>=2.0.41",
 ]
-dev = ["mypy >=1.13.0", "ruff >=0.9.9"]
+dev = [
+    "mypy>=1.13.0",
+ "pandas-stubs>=2.2.3.250308",
+ "ruff >=0.9.9",
+]
 
 [tool.uv]
 default-groups = ["main", "dev"]
