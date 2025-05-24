@@ -131,10 +131,14 @@ def load_json_data_to_db(logger: logging.Logger) -> None:
             logger.info("Successfully loaded all data into database!")
 
 
-if __name__ == "__main__":
+async def main():
     logger, listener = get_queue_logger(settings.app_name)
     try:
         asyncio.run(get_yelp_data_and_dump_to_json(logger))
         load_json_data_to_db(logger)
     finally:
         listener.stop()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
