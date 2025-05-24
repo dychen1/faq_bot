@@ -5,10 +5,8 @@ from fastapi import HTTPException
 from httpx import AsyncClient
 from pydantic import BaseModel
 
-from src.models.app.base import BusinessBase, BusinessLocation, BusinessTags
+from src.models.app.business_data import BusinessBase, BusinessLocation, BusinessTags
 from src.settings import settings
-
-logger = logging.getLogger(settings.app_name)
 
 
 class YelpBusinessData(BaseModel):
@@ -40,16 +38,17 @@ class YelpBusinessSearchParams(BaseModel):
 
 
 class YelpBusinessSearch:
-    def __init__(self, client: AsyncClient):
+    def __init__(self, client: AsyncClient, logger: logging.Logger):
         self.client = client
         self.base_url = f"{settings.yelp_base_url}/businesses/search"
+        self.logger = logger
 
     async def _get_data(self, params: YelpBusinessSearchParams) -> dict[str, Any]:
-        logger.debug(f"Sending Yelp query with params: {params.params}")
+        self.logger.debug(f"Sending Yelp query with params: {params.params}")
         response = await self.client.get(
             self.base_url, params=params.params, headers={"Authorization": f"Bearer {settings.yelp_api_key}"}
         )
-        logger.debug(f"Yelp response: {response.json()}")
+        self.logger.debug(f"Yelp response: {response.json()}")
         response.raise_for_status()
         return response.json()
 
@@ -148,19 +147,19 @@ class YelpBusinessSearch:
 
             # Validate query response matches the business name
             if yelp_data["businesses"][0]["name"] != params.location_name:
-                logger.debug(
+                self.logger.debug(
                     f"Business name mismatch: expected {params.location_name}, got {yelp_data['businesses'][0]['name']}"
                 )
 
                 # If name mismatch, check if phone number matches
                 if params.phone_number:
                     if yelp_data["businesses"][0]["display_phone"] != params.phone_number:
-                        logger.debug(
+                        self.logger.debug(
                             f"Phone number mismatch: expected {params.phone_number}, got {yelp_data['businesses'][0]['display_phone']}"
                         )
                         return None
 
             return await self._parse_to_response_model(yelp_data)
         except Exception as e:
-            logger.error(f"Error querying Yelp for {params.location_name}: {str(e)}")
+            self.logger.error(f"Error querying Yelp for {params.location_name}: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error querying Yelp: {e}")
