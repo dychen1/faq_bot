@@ -20,6 +20,7 @@ main = [
     "async-lru>=2.0.5",
     "aiofiles>=24.1.0",
     "sqlglot>=26.19.0",
+    "greenlet>=3.2.2",
 ]
 dev = [
     "mypy>=1.13.0",
