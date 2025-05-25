@@ -12,6 +12,7 @@ class DatabaseUtilities:
         """Database class to interact with SQLite database."""
         db_path: Path = Path(f"./data/{settings.database_url.split('/')[-1]}")
         self.database_url: str = f"{dialect}:///{db_path.absolute()}"
+        self.dialect: str = dialect
 
         self.engine: AsyncEngine = create_async_engine(
             self.database_url,

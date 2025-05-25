@@ -1,0 +1,4 @@
+{
+    "role": "user",
+    "message": "Adapt the following JSON output: {json_output}, to the following JSON schema: {json_schema}, given the validation error: {error}"
+}

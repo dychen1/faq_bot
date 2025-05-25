@@ -15,6 +15,10 @@ main = [
     "pandas>=2.2.3",
     "sqlalchemy>=2.0.41",
     "aiosqlite>=0.21.0",
+    "google-genai>=1.16.1",
+    "tenacity>=9.1.2",
+    "async-lru>=2.0.5",
+    "aiofiles>=24.1.0",
 ]
 dev = [
     "mypy>=1.13.0",

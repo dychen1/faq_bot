@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     # API Keys
     api_key: str = Field(alias="API_KEY")
     yelp_api_key: str = Field(alias="YELP_API_KEY")
+    google_ai_api_key: str = Field(alias="GOOGLE_AI_API_KEY")
 
     # App Settings
     app_name: str = Field(alias="APP_NAME")
@@ -27,6 +28,12 @@ class Settings(BaseSettings):
 
     # Database Settings
     database_url: str = Field(alias="DATABASE_URL")
+
+    # Model settings
+    chat_model: str = Field(alias="CHAT_MODEL")
+    chat_temperature: float = Field(alias="CHAT_TEMPERATURE", default=0.0)
+    validation_model: str = Field(alias="VALIDATION_MODEL")
+    validation_temperature: float = Field(alias="VALIDATION_TEMPERATURE", default=0.0)
 
     # Logger Settings
     debug: bool = Field(alias="DEBUG")

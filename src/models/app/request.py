@@ -9,3 +9,7 @@ class BasicBusinessInfo(BaseModel):
 
 class GetYelpDataRequest(BaseModel):
     businesses: list[BasicBusinessInfo]
+
+
+class AnswerRequest(BaseModel):
+    question: str

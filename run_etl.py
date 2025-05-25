@@ -9,13 +9,13 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
 from src.models.app.request import BasicBusinessInfo, GetYelpDataRequest
-from src.models.database.tables import Base, Business, Location, Tag
+from src.models.database.sqlite import Base, Business, Location, Tag
 from src.routers.get_yelp_data import _get_yelp_data
 from src.settings import settings
 from src.utils.logger import get_queue_logger
 
 
-async def get_yelp_data_and_dump_to_json(logger: logging.Logger):
+async def get_yelp_data_and_dump_to_json(logger: logging.Logger, input_path: Path, output_path: Path):
     # Create state with Yelp client
     yelp_client = AsyncClient(
         limits=Limits(
@@ -28,7 +28,7 @@ async def get_yelp_data_and_dump_to_json(logger: logging.Logger):
     yelp_client.headers.update({"Authorization": f"Bearer {settings.yelp_api_key}", "Content-Type": "application/json"})
 
     # Read and process data
-    df = pd.read_csv("./data/locations.csv")
+    df = pd.read_csv(input_path)
     businesses = [
         BasicBusinessInfo(
             location_name=row["name"] if pd.notna(row["name"]) else None,
@@ -41,7 +41,7 @@ async def get_yelp_data_and_dump_to_json(logger: logging.Logger):
     response = await _get_yelp_data(request, yelp_client, logger)
 
     # Dump data to json file -> Can be treated as an artifact for debugging -> ideally saved to s3 or some bucket
-    with open("./data/locations_yelp.json", "w") as f:
+    with open(output_path, "w") as f:
         json.dump(response.model_dump(), f, indent=2)
 
     # Clean up
@@ -71,7 +71,7 @@ def _create_database(logger: logging.Logger, db_url: str = settings.database_url
         logger.info("All tables created successfully!")
 
 
-def load_json_data_to_db(logger: logging.Logger) -> None:
+def load_json_data_to_db(logger: logging.Logger, output_path: Path) -> None:
     """
     Load data from locations_yelp.json into the SQLite database.
 
@@ -87,7 +87,7 @@ def load_json_data_to_db(logger: logging.Logger) -> None:
     engine = create_engine(settings.database_url, echo=settings.sql_echo)
 
     with Session(engine) as session:
-        with open("./data/locations_yelp.json", "r") as f:
+        with open(output_path, "r") as f:
             data = json.load(f)
             for business_data in data["data"]:
                 business_info = business_data["business_data"]
@@ -134,8 +134,12 @@ def load_json_data_to_db(logger: logging.Logger) -> None:
 async def main():
     logger, listener = get_queue_logger(settings.app_name)
     try:
-        asyncio.run(get_yelp_data_and_dump_to_json(logger))
-        load_json_data_to_db(logger)
+        locations_path = Path("./data/locations.csv")
+        output_path = Path("./data/processed_locations_yelp.json")
+        if not output_path.exists():
+            output_path.touch()
+        await get_yelp_data_and_dump_to_json(logger, locations_path, output_path)
+        load_json_data_to_db(logger, output_path)
     finally:
         listener.stop()
 

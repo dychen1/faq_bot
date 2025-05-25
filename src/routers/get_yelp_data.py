@@ -17,7 +17,7 @@ async def get_yelp_data(request: GetYelpDataRequest, state: State = Depends(get_
 
 
 async def _get_yelp_data(request: GetYelpDataRequest, yelp_client: AsyncClient, logger: Logger) -> GetYelpDataResponse:
-    search = YelpBusinessSearch(yelp_client)
+    search = YelpBusinessSearch(yelp_client, logger)
     missing: list[str] = []
     data: list[YelpBusinessData] = []
     for business in request.businesses:

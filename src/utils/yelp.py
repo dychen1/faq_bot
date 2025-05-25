@@ -128,7 +128,7 @@ class YelpBusinessSearch:
             restaurants_table_service=attributes.get("restaurants_table_service") or False,
             restaurants_take_out=attributes.get("restaurants_take_out") or False,
             waitlist_reservation=attributes.get("waitlist_reservation") or False,
-            wi_fi=attributes.get("wi_fi", "no") == "yes",
+            wi_fi=attributes.get("wi_fi", "no") == "free",
             has_gluten_free=attributes.get("has_gluten_free") or False,
             liked_by_vegetarians=attributes.get("liked_by_vegetarians") or False,
             liked_by_vegans=attributes.get("liked_by_vegans") or False,

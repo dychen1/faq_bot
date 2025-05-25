@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from logging import Logger
 
 from fastapi import Request
+from google.genai import Client as GoogleClient
 from httpx import AsyncClient, Limits
 
 from src.settings import settings
@@ -16,6 +17,8 @@ class State:
         # Settings
         self.settings = settings  # singleton
 
+        # Clients
+        self.google_client = GoogleClient(api_key=settings.google_ai_api_key)
         self.yelp_client = AsyncClient(
             limits=Limits(
                 max_connections=10,
