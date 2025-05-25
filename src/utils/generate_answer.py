@@ -1,13 +1,10 @@
-from typing import TypeVar
-
 from google.genai.types import GenerateContentConfig
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
+from src.models.app.validation import ValidationModel
 from src.utils.prompt_builder import build_response_fix_prompt
 from src.utils.state import State
-
-ValidationModel = TypeVar("ValidationModel", bound=BaseModel)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_random_exponential(min=0.5, max=5))

@@ -1,3 +1,5 @@
+import os
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -19,9 +21,11 @@ class Settings(BaseSettings):
     # App Settings
     app_name: str = Field(alias="APP_NAME")
     app_port: int = Field(alias="APP_PORT")
-    thread_pool_size: int | None = Field(
-        alias="APP_THREAD_POOL_SIZE", default=2
-    )  # if None, use 2 - 1 for event loop 1 for logger
+    thread_pool_size: int = Field(
+        alias="APP_THREAD_POOL_SIZE",
+        default=min(16, os.cpu_count() or 1 + 2),
+        description="Number of worker threads in the thread pool for application. Keep in mind 1 thread is used for queue logger.",
+    )
 
     # Yelp Settings
     yelp_base_url: str = Field(alias="YELP_BASE_URL")

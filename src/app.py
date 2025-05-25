@@ -23,7 +23,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     yield
 
     # Cleanup
-    app.state.state.thread_pool.shutdown(wait=True, cancel_futures=True)
+    app.state.state.shutdown()
     listener.stop()
 
 
