@@ -1,0 +1,4 @@
+{
+    "role": "user",
+    "message": "User question: {question}\nDatabase dialect: {dialect}\nTable schemas: {schemas}\nValid Tags: {tags}"
+}
