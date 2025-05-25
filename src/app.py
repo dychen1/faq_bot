@@ -3,6 +3,7 @@ from typing import AsyncGenerator
 
 from fastapi import FastAPI
 
+from src.routers.answer import router as answer_router
 from src.routers.get_yelp_data import router as yelp_router
 from src.settings import settings
 from src.utils.logger import get_queue_logger
@@ -34,3 +35,4 @@ app.add_middleware(AuthMiddleware, api_key=settings.api_key)
 
 # Mount routers
 app.include_router(yelp_router)
+app.include_router(answer_router)

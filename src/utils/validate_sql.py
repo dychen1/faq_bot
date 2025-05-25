@@ -12,7 +12,7 @@ class SQLValidationResult:
 
     is_valid: bool
     message: str
-    modified_query: str | None = None
+    validated_query: str | None = None
 
 
 def validate_and_limit_sql(
@@ -37,7 +37,7 @@ def validate_and_limit_sql(
         SQLValidationResult containing:
         - is_valid: Boolean indicating if query passed validation
         - message: Description of validation result or specific error
-        - modified_query: Query with LIMIT applied, or None if validation failed
+        - validated_query: Query with LIMIT applied, or None if validation failed
 
     Example:
         >>> result = validate_and_limit_sql("SELECT * FROM users WHERE age > 18")
@@ -60,9 +60,9 @@ def validate_and_limit_sql(
                 return SQLValidationResult(False, table_validation.message, None)
 
         # Check and enforce LIMIT constraint
-        modified_query = _add_limit(parsed, query, dialect, max_limit)
-        logger.info(f"Modified query: {modified_query}")
-        return SQLValidationResult(True, "Query validation passed", modified_query)
+        validated_query = _add_limit(parsed, query, dialect, max_limit)
+        logger.info(f"Validated query: {validated_query}")
+        return SQLValidationResult(True, "Query validation passed", validated_query)
 
     except ParseError as e:
         return SQLValidationResult(False, f"SQL parsing error: {str(e)}", None)

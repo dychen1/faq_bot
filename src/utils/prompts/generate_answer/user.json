@@ -1,0 +1,4 @@
+{
+    "role": "user",
+    "message": "User question: {question}\nDatabase query used: {generated_sql}\nDatabase query results: {results}"
+}

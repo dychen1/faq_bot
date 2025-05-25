@@ -8,10 +8,11 @@ from src.settings import settings
 
 
 class DatabaseUtilities:
-    def __init__(self, dialect: str = "sqlite+aiosqlite") -> None:
+    def __init__(self, driver: str = "sqlite+aiosqlite", dialect: str = "sqlite") -> None:
         """Database class to interact with SQLite database."""
         db_path: Path = Path(f"./data/{settings.database_url.split('/')[-1]}")
-        self.database_url: str = f"{dialect}:///{db_path.absolute()}"
+        self.driver: str = driver
+        self.database_url: str = f"{driver}:///{db_path.absolute()}"
         self.dialect: str = dialect
 
         self.engine: AsyncEngine = create_async_engine(
