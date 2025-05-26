@@ -26,7 +26,7 @@ async def answer(
     generated_sql: GeneratedSQL = await generate_gemini_model_validated_answer(
         state, (sql_generation_system_prompt, sql_generation_user_prompt), GeneratedSQL
     )
-    state.logger.info(f"Generated SQL for user question '{request.question}': {generated_sql}")
+    state.logger.info(f"Generated SQL for user question '{request.question}': {generated_sql.generated_sql}")
 
     validation_result = await state.run_in_thread_pool(
         validate_and_limit_sql, generated_sql.generated_sql, state.db.dialect, state.logger
