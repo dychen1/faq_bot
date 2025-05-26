@@ -9,7 +9,7 @@ command_exists() {
 
 # Check if uv is installed
 if ! command_exists uv; then
-    echo "uv is not installed. Please install uv from https://astral.sh/uv/install.sh"
+    echo "uv is not installed. Please install uv from https://docs.astral.sh/uv/getting-started/installation/"
     exit 1
 fi
 

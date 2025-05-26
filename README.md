@@ -44,13 +44,24 @@ This pulls data for the businesses defined in `./data/business_list.csv`
 
 ### Running Sample Requests
 
-To run sample requests, first have a running local instance of the API using `run_api.sh`
+To run sample requests, first have a running local instance of the API using `run_api.sh`:
 
 ```bash
 uv run run_sample_requests.py 
 ```
 
-There are 6 sample questions defined in the script, they will run concurrently. Feel free to add or modify and of the questions in the list to play around with the API. Alternatively, you can use any preferred tool that can send HTTP requests, such as curl or Postman. Keep in mind that there is an API key defined with the header `x-api-key`.
+There are 6 sample questions defined in the script, they will run concurrently. Feel free to add or modify any of the questions in the list to play around with the API.
+
+#### Using the API Directly
+
+You can also use any HTTP client like curl or Postman. Here's an example using curl:
+
+```bash
+curl -X POST "http://localhost:PORT-NUMBER/answer" \
+     -H "x-api-key: YOUR-API-KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"question": "What is the address of business X?"}'
+```
 
 ### Environment Variables
 
@@ -66,9 +77,7 @@ The application uses Pydantic's `BaseSettings` for configuration management. Set
 
 All settings are frozen (immutable) after initialization to prevent accidental modifications during runtime.
 
-## Notes
-
-### Data quality
+## Data Quality
 
 Of the 100 businesses listed, 19 of them are either permanently closed, temporarily closed or were not listed on Yelp. An improvement that we can do her is to supplement the Yelp data with Google Places data as it provides a more comprehensive list of locations, however Google Places does not seem to have the same quantity of explicit attributes that Yelp data provides (i.e. does not tell you if business has wifi and whatnot).
 
@@ -77,7 +86,43 @@ For example: I simplified the `wi_fi` attribute to any value which is not `free`
 
 Another example: I skipped dealing with the `cost` attribute altogether to save time, however I could have modelled the ENUM nature of this attribute to a finite number of boolean flags (e.g. "is_cheap" = "$", "is_moderately_priced" = "$$", etc.)
 
-## Direction & intention of solution
+### Summary of Current Limitations
+
+- 19 out of 100 businesses are either:
+  - Permanently closed
+  - Temporarily closed
+  - Not listed on Yelp
+
+### Summary of Data Source Considerations
+
+- Yelp provides rich attribute data but has coverage limitations
+- Google Places offers better coverage but fewer explicit attributes
+- Potential solution: Combine both data sources for comprehensive coverage
+
+### Summary of Data Modeling Decisions
+
+1. **Attribute Simplification**
+   - Converted ENUM attributes to BOOL for simplicity
+   - Skipped complex attributes that couldn't be flattened
+
+2. **Examples of Simplification**
+   - `wi_fi` attribute:
+     - Only `free` values considered as `true`
+     - All other values (paid, customer-only) marked as `false`
+   - `cost` attribute:
+     - Skipped in current implementation
+     - Could be modeled as multiple boolean flags:
+       - `is_cheap` = "$"
+       - `is_moderately_priced` = "$$"
+       - etc.
+
+#### Data model
+
+![Tables](./docs/db_model.png)
+
+## Direction & Intention of Solution
+
+### Full Thoughts
 
 When first reading through the problem statement, there were many paths to take. The simplest and fastest one to implement would have been to create endpoints to answer a finite number of defined questions, much like previous generation FAQs bots. I considered this for the time element but thought it would have been a bit lackluster in terms of capability of a question answer product, especially in the age of generative AI.
 
@@ -109,6 +154,34 @@ Following this model, we would need a question classifier to determine if the qu
 
 ![Solution Diagram](./docs/simplified_solution_diagram.png)
 
-#### Data model
+### Summary of Current Implementation
 
-![Tables](./docs/db_model.png)
+The solution focuses on fact-based questions using SQL generation:
+
+```sql
+-- Example: Business address query
+SELECT address 
+FROM businesses_table 
+WHERE name = 'X';
+
+-- Example: Pastry availability query (not supported)
+SELECT name 
+FROM businesses_table 
+WHERE has_pastries = true;  -- This field doesn't exist
+```
+
+#### Future Improvements
+
+1. **Query Classification**
+   - Implement intent-based question handling
+   - Add semantic search capabilities
+
+2. **Vector Database Integration**
+   - Use Qdrant or Pinecone for semantic search
+   - Create separate collections for:
+     - Business facts and attributes
+     - User reviews with expanded descriptions
+
+3. **Question Classifier**
+   - Determine if question is supported by data model
+   - Route to appropriate processing method
