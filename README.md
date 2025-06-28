@@ -118,7 +118,7 @@ Another example: I skipped dealing with the `cost` attribute altogether to save 
 
 #### Data model
 
-![Tables](./docs/db_model.png)
+![Tables](./data/docs/db_model.png)
 
 ## Direction & Intention of Solution
 
@@ -152,7 +152,7 @@ Following this model, we would need a question classifier to determine if the qu
 
 #### Simple diagram
 
-![Solution Diagram](./docs/simplified_solution_diagram.png)
+![Solution Diagram](./data/docs/simplified_solution_diagram.png)
 
 ### Summary of Current Implementation
 
