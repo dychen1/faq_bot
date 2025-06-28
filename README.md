@@ -150,10 +150,6 @@ For example, an embedding collection facts and attributes of businesses and an e
 
 Following this model, we would need a question classifier to determine if the question is supported by the data model.
 
-#### Simple diagram
-
-![Solution Diagram](./data/docs/simplified_solution_diagram.png)
-
 ### Summary of Current Implementation
 
 The solution focuses on fact-based questions using SQL generation:
