@@ -1,4 +1,4 @@
-# Bounty Hunter
+# Take home assignment
 
 A FastAPI-based service that scrapes yelp data and answers natural language questions about local Bay Area businesses.
 
